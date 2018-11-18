@@ -8,6 +8,7 @@ public class Doorway : MonoBehaviour
 	public Vector2 EnemyOutputDirection;
 	private static List<Doorway> _doorways = new List<Doorway>();
 	private static int _enemyCount = 0;
+	private static int _lastSpawnIndex;
 
 	private static readonly int MaxEnemyAllowed = 2;
 
@@ -37,19 +38,13 @@ public class Doorway : MonoBehaviour
 	private static void RandomSpawnEnemy()
 	{
 		System.Random rnd = new System.Random();
-		List<int> indexes = new List<int>();
 		while (_enemyCount < MaxEnemyAllowed)
 		{
 			int i = rnd.Next(_doorways.Count);
-			if (!indexes.Contains(i))
+			if (i != _lastSpawnIndex)
 			{
 				_doorways[i].GenerateEnemy();
-				indexes.Add(i);
-			}
-
-			if (indexes.Count >= _doorways.Count)
-			{
-				indexes.Clear();
+				_lastSpawnIndex = i;
 			}
 		}
 	}
