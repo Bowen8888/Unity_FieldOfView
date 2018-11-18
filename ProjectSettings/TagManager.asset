@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - SideObstacle
   - Item
+  - Agent
   layers:
   - Default
   - TransparentFX

@@ -21,12 +21,24 @@ public class Enemy : MonoBehaviour
 		if (other.CompareTag("SideObstacle"))
 		{
 			System.Random rnd = new System.Random();
-			_direction = (rnd.NextDouble()<0.5)?Vector2.left:Vector2.right;
+			double chance = rnd.NextDouble();
+			if (chance < 0.33)
+			{
+				_direction = Vector2.left;
+			}
+			else if (chance < 0.66)
+			{
+				_direction = Vector2.right;
+			}
+			else
+			{
+				SelfDestroy();
+			}
 		}
 
 		if (other.CompareTag("Doorway"))
 		{
-			Destroy(gameObject);
+			SelfDestroy();
 		}
 	}
 
@@ -38,5 +50,11 @@ public class Enemy : MonoBehaviour
 	public void SetDirection(Vector2 direction)
 	{
 		_direction = direction;
+	}
+
+	private void SelfDestroy()
+	{
+		Destroy(gameObject);
+		Doorway.DecrementEnemyCount();
 	}
 }
