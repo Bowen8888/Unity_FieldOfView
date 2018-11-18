@@ -9,6 +9,7 @@ TagManager:
   - SideObstacle
   - Item
   - Agent
+  - FOV
   layers:
   - Default
   - TransparentFX
