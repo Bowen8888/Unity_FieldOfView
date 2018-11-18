@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using Boo.Lang;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Agent : MonoBehaviour {
-	private Vector2 _direction;
+	private Vector3 _direction;
 	private NavMeshAgent agent;
+	private Vector3 _target;
 	private Rigidbody _rigidbody;
+	public GameObject alcovesController;
 	
 	// Use this for initialization
 	void Start ()
@@ -19,15 +21,50 @@ public class Agent : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		GetInput();
-		Nav();
+		//Nav();
+		UpdateTarget();
+		if (Math.Abs(_rigidbody.velocity.x) < 0.01 && Math.Abs(_rigidbody.velocity.z) < 0.01)
+		{
+			Nav();
+		}
 	}
 
 	private void Nav()
 	{
-		agent.SetDestination(GetTheClosestItemPosition());
+		agent.SetDestination(FindNextAlcovePosition());
 	}
 
-	private Vector3 GetTheClosestItemPosition()
+	private Vector3 FindNextAlcovePosition()
+	{
+		var alcoves = alcovesController.GetComponent<AlcovesController>().alcoves;
+		int myAlcoveIndex = 0;
+		float minDist = Vector3.Distance(alcoves[0].transform.position, transform.position);
+		
+		//find my alcove first, or the closest one
+		for (int i=1; i< alcoves.Count; i++)
+		{
+			float dist = Vector3.Distance( alcoves[i].transform.position, transform.position);
+			if (dist < minDist)
+			{
+				minDist = dist;
+				myAlcoveIndex = i;
+			}
+		}
+
+		Vector3 prevPos = alcoves[(myAlcoveIndex + 9) % 10].transform.position;
+		Vector3 nextPos = alcoves[(myAlcoveIndex + 1) % 10].transform.position;
+		float tarDistToPrev = Vector3.Distance(prevPos, _target);
+		float tarDistToNext = Vector3.Distance(nextPos, _target);
+
+		Vector3 closestAlcove = (tarDistToPrev < tarDistToNext) ? prevPos : nextPos;
+
+		float distToTarget = Vector3.Distance(_target, transform.position);
+		float distToClosestAlcove = Vector3.Distance(closestAlcove, transform.position);
+		
+		return (distToTarget < distToClosestAlcove) ? _target: closestAlcove;
+	}
+
+	private void UpdateTarget()
 	{
 		GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
 		Vector3 agentPosition = transform.position;
@@ -45,12 +82,12 @@ public class Agent : MonoBehaviour {
 			}
 		}
 
-		return target;
+		_target = target;
 	}
 	
 	private void Move()
 	{
-		transform.Translate(_direction*Time.deltaTime);
+		transform.Translate(_direction*Time.deltaTime*3);
 	}
 
 	private void OnTriggerEnter(Collider other)
@@ -58,7 +95,13 @@ public class Agent : MonoBehaviour {
 		if (other.CompareTag("Item"))
 		{
 			Destroy(other.gameObject);
+		}	
+		
+		if (other.CompareTag("FOV"))
+		{
+			Destroy(gameObject);
 		}
+		
 	}
 	
 	private void GetInput()
@@ -70,12 +113,12 @@ public class Agent : MonoBehaviour {
 		}
 		if (Input.GetKey(KeyCode.W))
 		{
-			_direction = Vector2.up;
+			_direction = Vector3.forward;
 			Move();
 		}
 		if (Input.GetKey(KeyCode.S))
 		{
-			_direction = Vector2.down;
+			_direction = Vector3.back;
 			Move();
 		}
 		if (Input.GetKey(KeyCode.D))
