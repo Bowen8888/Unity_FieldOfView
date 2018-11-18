@@ -24,6 +24,18 @@ public class Enemy : MonoBehaviour
 	public void SetDirection(Vector2 direction)
 	{
 		_direction = direction;
+		if (direction.x > 0)
+		{
+			Vector3 tmp = transform.GetChild(0).transform.position;
+			tmp.x = transform.position.x + 0.8f;
+			transform.GetChild(0).transform.position = tmp;
+		}
+		else if (direction.x < 0)
+		{
+			Vector3 tmp = transform.GetChild(0).transform.position;
+			tmp.x = transform.position.x - 0.8f;
+			transform.GetChild(0).transform.position = tmp;
+		}
 	}
 
 	public void SelfDestroy()
