@@ -19,7 +19,7 @@ public class Doorway : MonoBehaviour
 
 	private void GenerateEnemy()
 	{
-		GameObject enemy = Instantiate(EnemyPrefab, new Vector3(transform.position.x,transform.position.y),Quaternion.identity);
+		GameObject enemy = Instantiate(EnemyPrefab, new Vector3(transform.position.x,transform.position.y,transform.position.z),Quaternion.identity);
 		enemy.GetComponent<Enemy>().SetDirection(EnemyOutputDirection);
 	}
 }
