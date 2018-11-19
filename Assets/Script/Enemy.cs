@@ -38,6 +38,11 @@ public class Enemy : MonoBehaviour
 		}
 	}
 
+	public Vector2 GetDirection()
+	{
+		return _direction;
+	}
+
 	public void SelfDestroy()
 	{
 		Destroy(gameObject);

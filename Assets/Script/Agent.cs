@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using Boo.Lang;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,10 +23,61 @@ public class Agent : MonoBehaviour {
 	void Update () {
 		GetInput();
 		UpdateTarget();
-		if (!Moved())
+
+		if (SafeToMove())
 		{
-			Nav();
+			if (!Moved())
+			{
+				agent.SetDestination(_target);
+			}
 		}
+		else
+		{
+			agent.SetDestination(FindClosestSafeAlcove());
+		}
+	}
+
+	private bool SafeToMove()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+//		//if all enemies are in opposite side.
+//		if (enemies.All(enemy => !EnemyIsInSameSide(enemy, transform.position)))
+//		{
+//			return true;
+//		}
+
+		float minDist = 100;
+
+		foreach (var enemy in enemies)
+		{
+			float dist = Vector3.Distance(enemy.transform.position, transform.position);
+			minDist = Math.Min(dist, minDist);
+		}
+		
+		//Distance between agent and enemy is large enough
+		if (minDist > 5)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+
+	private bool EnemyIsInSameSide(GameObject enemy, Vector3 obj)
+	{
+		return (enemy.transform.position.z > 0.77 && obj.z > 0.77) || (enemy.transform.position.z < -0.69 && obj.z < -0.69);
+	}
+
+	private bool EnemyMovingTowards(GameObject enemyGameObject)
+	{
+		Vector2 enemyMovingDirection = enemyGameObject.GetComponent<Enemy>().GetDirection();
+		float diffInXAxis = transform.position.x - enemyGameObject.transform.position.x; //if > 0 then enemy is left else right
+		return SameSign(enemyMovingDirection.x, diffInXAxis);
+	}
+
+	private bool SameSign(float num1, float num2)
+	{
+		return num1 >= 0 && num2 >= 0 || num1 < 0 && num2 < 0;
 	}
 
 	private bool Moved()
@@ -35,39 +87,53 @@ public class Agent : MonoBehaviour {
 		return moved;
 	}
 
-	private void Nav()
-	{
-		agent.SetDestination(FindNextAlcovePosition());
-	}
-
-	private Vector3 FindNextAlcovePosition()
+	private Vector3 FindClosestSafeAlcove()
 	{
 		var alcoves = alcovesController.GetComponent<AlcovesController>().alcoves;
-		int myAlcoveIndex = 0;
-		float minDist = Vector3.Distance(alcoves[0].transform.position, transform.position);
+		int myAlcoveIndex = -1;
+		float minDist = 100;
 		
 		//find my alcove first, or the closest one
-		for (int i=1; i< alcoves.Count; i++)
+		for (int i=0; i< alcoves.Count; i++)
 		{
-			float dist = Vector3.Distance( alcoves[i].transform.position, transform.position);
-			if (dist < minDist)
+			Vector3 alcovePos = alcoves[i].transform.position;
+			float dist = Vector3.Distance( alcovePos, transform.position);
+			if (dist < minDist && HasNoEnemyInFront(alcovePos))
 			{
 				minDist = dist;
 				myAlcoveIndex = i;
 			}
 		}
 
-		Vector3 prevPos = alcoves[(myAlcoveIndex + 9) % 10].transform.position;
-		Vector3 nextPos = alcoves[(myAlcoveIndex + 1) % 10].transform.position;
-		float tarDistToPrev = Vector3.Distance(prevPos, _target);
-		float tarDistToNext = Vector3.Distance(nextPos, _target);
-
-		Vector3 closestAlcove = (tarDistToPrev < tarDistToNext) ? prevPos : nextPos;
-
+		if (myAlcoveIndex == -1)
+		{
+			return transform.position;
+		}
+		
+		Vector3 closestAlcove = alcoves[myAlcoveIndex].transform.position;
+		
 		float distToTarget = Vector3.Distance(_target, transform.position);
 		float distToClosestAlcove = Vector3.Distance(closestAlcove, transform.position);
-		
-		return (distToTarget < distToClosestAlcove) ? _target: closestAlcove;
+
+		return (distToTarget < distToClosestAlcove || InAlcove(closestAlcove, _target)) ? _target: closestAlcove;
+	}
+
+	private bool HasNoEnemyInFront(Vector3 alcove)
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		float closestEnemyDistance = 100;
+
+		foreach (var enemy in enemies)
+		{
+			float dist = Vector3.Distance(enemy.transform.position, alcove);
+			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
+		}
+		return closestEnemyDistance > 5 || InAlcove(alcove, transform.position);
+	}
+
+	private bool InAlcove(Vector3 alcove, Vector3 targ)
+	{
+		return targ.x < alcove.x+0.6 && targ.x > alcove.x-0.6 && targ.z < alcove.z+0.6 && targ.z > alcove.z - 0.6;
 	}
 
 	private void UpdateTarget()
