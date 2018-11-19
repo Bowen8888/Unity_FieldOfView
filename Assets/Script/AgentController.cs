@@ -5,6 +5,7 @@ using UnityEngine;
 public class AgentController : MonoBehaviour
 {
 	public GameObject AgentPrefab;
+	public GameObject PlayerPrefab;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +17,14 @@ public class AgentController : MonoBehaviour
 			index = rnd.Next(alcoves.Count);
 		}
 		Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
+		var playerIndex = rnd.Next(alcoves.Count);
+		
+		while (playerIndex == 0 || playerIndex == 6 || playerIndex == index)
+		{
+			playerIndex = rnd.Next(alcoves.Count);
+		}
+		
+		Instantiate(PlayerPrefab, alcoves[playerIndex].transform.position,Quaternion.identity);
 	}
 	
 	// Update is called once per frame

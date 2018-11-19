@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class Agent : MonoBehaviour {
-	private Vector3 _direction;
 	private NavMeshAgent agent;
 	private Vector3 _target;
 
@@ -22,7 +21,6 @@ public class Agent : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		GetInput();
 		UpdateTarget();
 
 		if (CloseEnemyMovingTowards() && InDangerZone())
@@ -200,11 +198,6 @@ public class Agent : MonoBehaviour {
 
 		_target = target;
 	}
-	
-	private void Move()
-	{
-		transform.Translate(_direction*Time.deltaTime*3);
-	}
 
 	private void OnTriggerEnter(Collider other)
 	{
@@ -218,29 +211,5 @@ public class Agent : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		
-	}
-	
-	private void GetInput()
-	{
-		if (Input.GetKey(KeyCode.A))
-		{
-			_direction = Vector2.left;
-			Move();
-		}
-		if (Input.GetKey(KeyCode.W))
-		{
-			_direction = Vector3.forward;
-			Move();
-		}
-		if (Input.GetKey(KeyCode.S))
-		{
-			_direction = Vector3.back;
-			Move();
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			_direction = Vector2.right;
-			Move();
-		}
 	}
 }
