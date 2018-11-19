@@ -9,9 +9,10 @@ public class Agent : MonoBehaviour {
 	private Vector3 _direction;
 	private NavMeshAgent agent;
 	private Vector3 _target;
-	public GameObject alcovesController;
 
 	private Vector3 prevPosition;
+	private float closestEnemyXMovingDirection;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -24,7 +25,11 @@ public class Agent : MonoBehaviour {
 		GetInput();
 		UpdateTarget();
 
-		if (SafeToMove())
+		if (CloseEnemyMovingTowards() && InDangerZone())
+		{
+			agent.SetDestination(FindEscapeAlcove());
+		}
+		else if (SafeToMove())
 		{
 			if (!Moved())
 			{
@@ -37,14 +42,70 @@ public class Agent : MonoBehaviour {
 		}
 	}
 
+	private bool InDangerZone()
+	{
+		var z = transform.position.z;
+		
+		return (z > 1.16 && z < 3.65) || (z>-3.51 && z<-1.06);
+	}
+
+	private Vector3 FindEscapeAlcove()
+	{
+		var alcoves = AlcovesController.GetAlcoves();
+		int myAlcoveIndex = -1;
+		float minDist = 100;
+		
+		//find my alcove first, or the closest one
+		for (int i=0; i< alcoves.Count; i++)
+		{
+			Vector3 alcovePos = alcoves[i].transform.position;
+			float dist = Vector3.Distance( alcovePos, transform.position);
+			if (dist < minDist && ((closestEnemyXMovingDirection < 0) ? alcovePos.x < transform.position.x: alcovePos.x >= transform.position.x))
+			{
+				minDist = dist;
+				myAlcoveIndex = i;
+			}
+		}
+
+		if (myAlcoveIndex == -1)
+		{
+			return transform.position;
+		}
+		
+		Vector3 closestAlcove = alcoves[myAlcoveIndex].transform.position;
+		
+		float distToTarget = Vector3.Distance(_target, transform.position);
+		float distToClosestAlcove = Vector3.Distance(closestAlcove, transform.position);
+
+		return (distToTarget < distToClosestAlcove || InAlcove(closestAlcove, _target, 0.6)) ? _target: closestAlcove;
+	}
+	
+	private bool CloseEnemyMovingTowards()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+		foreach (var enemyGameObject in enemies)
+		{
+			Vector2 enemyMovingDirection = enemyGameObject.GetComponent<Enemy>().GetDirection();
+			float diffInXAxis = transform.position.x - enemyGameObject.transform.position.x; //if > 0 then enemy is left else right
+			if (SameSign(enemyMovingDirection.x, diffInXAxis) && Vector3.Distance(transform.position, enemyGameObject.transform.position) < 4)
+			{
+				closestEnemyXMovingDirection = enemyMovingDirection.x;
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	private bool SameSign(float num1, float num2)
+	{
+		return num1 >= 0 && num2 >= 0 || num1 < 0 && num2 < 0;
+	}
+
 	private bool SafeToMove()
 	{
 		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-//		//if all enemies are in opposite side.
-//		if (enemies.All(enemy => !EnemyIsInSameSide(enemy, transform.position)))
-//		{
-//			return true;
-//		}
 
 		float minDist = 100;
 
@@ -63,23 +124,6 @@ public class Agent : MonoBehaviour {
 		return false;
 	}
 
-	private bool EnemyIsInSameSide(GameObject enemy, Vector3 obj)
-	{
-		return (enemy.transform.position.z > 0.77 && obj.z > 0.77) || (enemy.transform.position.z < -0.69 && obj.z < -0.69);
-	}
-
-	private bool EnemyMovingTowards(GameObject enemyGameObject)
-	{
-		Vector2 enemyMovingDirection = enemyGameObject.GetComponent<Enemy>().GetDirection();
-		float diffInXAxis = transform.position.x - enemyGameObject.transform.position.x; //if > 0 then enemy is left else right
-		return SameSign(enemyMovingDirection.x, diffInXAxis);
-	}
-
-	private bool SameSign(float num1, float num2)
-	{
-		return num1 >= 0 && num2 >= 0 || num1 < 0 && num2 < 0;
-	}
-
 	private bool Moved()
 	{
 		bool moved = !prevPosition.Equals(transform.position);
@@ -89,7 +133,7 @@ public class Agent : MonoBehaviour {
 
 	private Vector3 FindClosestSafeAlcove()
 	{
-		var alcoves = alcovesController.GetComponent<AlcovesController>().alcoves;
+		var alcoves = AlcovesController.GetAlcoves();
 		int myAlcoveIndex = -1;
 		float minDist = 100;
 		
@@ -115,7 +159,7 @@ public class Agent : MonoBehaviour {
 		float distToTarget = Vector3.Distance(_target, transform.position);
 		float distToClosestAlcove = Vector3.Distance(closestAlcove, transform.position);
 
-		return (distToTarget < distToClosestAlcove || InAlcove(closestAlcove, _target)) ? _target: closestAlcove;
+		return (distToTarget < distToClosestAlcove || InAlcove(closestAlcove, _target, 0.6)) ? _target: closestAlcove;
 	}
 
 	private bool HasNoEnemyInFront(Vector3 alcove)
@@ -128,12 +172,12 @@ public class Agent : MonoBehaviour {
 			float dist = Vector3.Distance(enemy.transform.position, alcove);
 			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
 		}
-		return closestEnemyDistance > 5 || InAlcove(alcove, transform.position);
+		return closestEnemyDistance > 3 || InAlcove(alcove, transform.position,0.1);
 	}
 
-	private bool InAlcove(Vector3 alcove, Vector3 targ)
+	private bool InAlcove(Vector3 alcove, Vector3 targ, double tol)
 	{
-		return targ.x < alcove.x+0.6 && targ.x > alcove.x-0.6 && targ.z < alcove.z+0.6 && targ.z > alcove.z - 0.6;
+		return targ.x < alcove.x+tol && targ.x > alcove.x-tol && targ.z < alcove.z+tol && targ.z > alcove.z - tol;
 	}
 
 	private void UpdateTarget()
