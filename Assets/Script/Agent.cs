@@ -8,25 +8,31 @@ public class Agent : MonoBehaviour {
 	private Vector3 _direction;
 	private NavMeshAgent agent;
 	private Vector3 _target;
-	private Rigidbody _rigidbody;
 	public GameObject alcovesController;
-	
+
+	private Vector3 prevPosition;
 	// Use this for initialization
 	void Start ()
 	{
 		agent = GetComponent<NavMeshAgent>();
-		_rigidbody = GetComponent<Rigidbody>();
+		prevPosition = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		GetInput();
-		//Nav();
 		UpdateTarget();
-		if (Math.Abs(_rigidbody.velocity.x) < 0.01 && Math.Abs(_rigidbody.velocity.z) < 0.01)
+		if (!Moved())
 		{
 			Nav();
 		}
+	}
+
+	private bool Moved()
+	{
+		bool moved = !prevPosition.Equals(transform.position);
+		prevPosition = transform.position;
+		return moved;
 	}
 
 	private void Nav()
