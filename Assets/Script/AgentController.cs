@@ -8,6 +8,14 @@ public class AgentController : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+		var alcoves = AlcovesController.GetAlcoves();
+		System.Random rnd = new System.Random();
+		var index = rnd.Next(alcoves.Count);
+		while (index == 0 || index == 6)
+		{
+			index = rnd.Next(alcoves.Count);
+		}
+		Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
 	}
 	
 	// Update is called once per frame
@@ -17,13 +25,5 @@ public class AgentController : MonoBehaviour
 
 	public void InstantiateAgent()
 	{
-		var alcoves = AlcovesController.GetAlcoves();
-		System.Random rnd = new System.Random();
-		var index = rnd.Next(alcoves.Count);
-		while (index == 0 || index == 6)
-		{
-			index = rnd.Next(alcoves.Count);
-		}
-		Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
 	}
 }

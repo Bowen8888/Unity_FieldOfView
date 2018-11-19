@@ -8,8 +8,7 @@ public class AlcovesController : MonoBehaviour {
 	
 	private static List<GameObject> staticAlcoves = new List<GameObject>();
 
-	// Use this for initialization
-	void Start () {
+	void Awake () {
 		staticAlcoves.AddRange(alcoves);
 	}
 	
