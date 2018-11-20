@@ -9,8 +9,11 @@ public class AgentController : MonoBehaviour
 	public GameObject PlayerPrefab;
 	public Text PlayerScoreText;
 	public Text AgentScoreText;
+	public Text WinningText;
 	private static int _agentScore;
 	private static int _playerScore;
+	private bool _agentDead;
+	private bool _playerDead;
 
 	// Use this for initialization
 	void Start () {
@@ -47,11 +50,49 @@ public class AgentController : MonoBehaviour
 	{
 		_agentScore++;
 		AgentScoreText.text = "Agent Score: " + _agentScore;
+		if (_agentScore + _playerScore == 10)
+		{
+			ShowWinningText();
+		}
 	}
 
 	public void IncrementPlayerScore()
 	{
 		_playerScore++;
 		PlayerScoreText.text = "Player Score: " + _playerScore;
+		if (_agentScore + _playerScore == 10)
+		{
+			ShowWinningText();
+		}
+	}
+
+	private void ShowWinningText()
+	{
+		if (_playerScore == _agentScore)
+		{
+			WinningText.text = "Tie!";
+		}
+		else
+		{
+			WinningText.text = ((_playerScore > _agentScore) ? "Player": "Agent") + "Won!";
+		}
+	}
+
+	public void AgentDead()
+	{
+		_agentDead = true;
+		if (_playerDead)
+		{
+			ShowWinningText();
+		}
+	}
+
+	public void PlayerDead()
+	{
+		_playerDead = true;
+		if (_agentDead)
+		{
+			ShowWinningText();
+		}
 	}
 }

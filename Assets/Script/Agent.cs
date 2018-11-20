@@ -206,6 +206,7 @@ public class Agent : MonoBehaviour {
 		if (other.CompareTag("FOV"))
 		{
 			Destroy(gameObject);
+			_agentController.AgentDead();
 		}
 		
 	}
