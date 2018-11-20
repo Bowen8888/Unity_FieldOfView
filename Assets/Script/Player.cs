@@ -42,7 +42,7 @@ public class Player : MonoBehaviour {
 	
 	private void Move()
 	{
-		transform.Translate(_direction*Time.deltaTime*2);
+		transform.Translate(_direction*Time.deltaTime*3);
 	}
 	
 	private void OnTriggerEnter(Collider other)
