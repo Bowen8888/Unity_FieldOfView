@@ -180,22 +180,18 @@ public class Agent : MonoBehaviour {
 	private void UpdateTarget()
 	{
 		GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
-		Vector3 agentPosition = transform.position;
-		Vector3 target = (items.Length > 0) ? items[0].transform.position : agentPosition;
-		float minDist = (items.Length > 0) ? Vector3.Distance(items[0].transform.position, agentPosition) : 0;
+		float minDist = 100;
 		
-		for (int i = 1; i < items.Length; i++)
+		for (int i = 0; i < items.Length; i++)
 		{
 			Vector3 curItemPosition = items[i].transform.position;
-			float dist = Vector3.Distance(curItemPosition, agentPosition);
+			float dist = Vector3.Distance(curItemPosition, transform.position);
 			if (dist < minDist)
 			{
 				minDist = dist;
-				target = curItemPosition;
+				_target = curItemPosition;
 			}
 		}
-
-		_target = target;
 	}
 
 	private void OnTriggerEnter(Collider other)
