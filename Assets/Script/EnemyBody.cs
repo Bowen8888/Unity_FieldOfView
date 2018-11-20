@@ -22,6 +22,7 @@ public class EnemyBody : MonoBehaviour
 	{
 		if (other.CompareTag("SideObstacle"))
 		{
+			transform.parent.GetChild(0).gameObject.SetActive(false);
 			System.Random rnd = new System.Random();
 			double chance = rnd.NextDouble();
 			if (chance < 0.33)
@@ -41,6 +42,14 @@ public class EnemyBody : MonoBehaviour
 		if (other.CompareTag("Doorway"))
 		{
 			_enemy.SelfDestroy();
+		}
+	}
+
+	private void OnTriggerExit(Collider other)
+	{
+		if (other.CompareTag("SideObstacle"))
+		{
+			transform.parent.GetChild(0).gameObject.SetActive(true);
 		}
 	}
 }
