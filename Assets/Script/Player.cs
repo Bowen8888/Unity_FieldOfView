@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 	private Vector3 _direction;
+	private AgentController _agentController;
 
 	// Use this for initialization
 	void Start () {
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour {
 		if (other.CompareTag("Item"))
 		{
 			Destroy(other.gameObject);
+			_agentController.IncrementPlayerScore();
 		}	
 		
 		if (other.CompareTag("FOV"))
@@ -56,5 +58,10 @@ public class Player : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		
+	}
+
+	public void SetAgentController(AgentController agentController)
+	{
+		_agentController = agentController;
 	}
 }

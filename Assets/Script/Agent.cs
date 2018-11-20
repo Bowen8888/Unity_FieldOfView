@@ -11,6 +11,7 @@ public class Agent : MonoBehaviour {
 
 	private Vector3 prevPosition;
 	private float closestEnemyXMovingDirection;
+	private AgentController _agentController;
 
 	// Use this for initialization
 	void Start ()
@@ -199,6 +200,7 @@ public class Agent : MonoBehaviour {
 		if (other.CompareTag("Item"))
 		{
 			Destroy(other.gameObject);
+			_agentController.IncrementAgentScore();
 		}	
 		
 		if (other.CompareTag("FOV"))
@@ -206,5 +208,10 @@ public class Agent : MonoBehaviour {
 			Destroy(gameObject);
 		}
 		
+	}
+
+	public void SetAgentController(AgentController agentController)
+	{
+		_agentController = agentController;
 	}
 }
