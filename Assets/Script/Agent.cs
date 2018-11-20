@@ -169,7 +169,7 @@ public class Agent : MonoBehaviour {
 			float dist = Vector3.Distance(enemy.transform.position, alcove);
 			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
 		}
-		return closestEnemyDistance > 4 || InAlcove(alcove, transform.position, (transform.position.z < 0) ? 0.39 : 0.35);
+		return closestEnemyDistance > 4 || InAlcove(alcove, transform.position, (transform.position.z < 0) ? 0.397 : 0.359);
 	}
 
 	private bool InAlcove(Vector3 alcove, Vector3 targ, double tol)
