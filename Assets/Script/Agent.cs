@@ -22,12 +22,7 @@ public class Agent : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		UpdateTarget();
-
-		if (CloseEnemyMovingTowards() && InDangerZone())
-		{
-			agent.SetDestination(FindEscapeAlcove());
-		}
-		else if (SafeToMove())
+		if (SafeToMove())
 		{
 			if (!Moved())
 			{
@@ -36,7 +31,14 @@ public class Agent : MonoBehaviour {
 		}
 		else
 		{
-			agent.SetDestination(FindClosestSafeAlcove());
+			if (CloseEnemyMovingTowards() && InDangerZone())
+			{
+				agent.SetDestination(FindEscapeAlcove());
+			}
+			else
+			{
+				agent.SetDestination(FindClosestSafeAlcove());
+			}
 		}
 	}
 
@@ -44,7 +46,7 @@ public class Agent : MonoBehaviour {
 	{
 		var z = transform.position.z;
 		
-		return (z > 1.16 && z < 3.65) || (z>-3.51 && z<-1.06);
+		return (z > 0.42 && z < 4.31) || (z>-4.51 && z<-0.31);
 	}
 
 	private Vector3 FindEscapeAlcove()
@@ -72,10 +74,7 @@ public class Agent : MonoBehaviour {
 		
 		Vector3 closestAlcove = alcoves[myAlcoveIndex].transform.position;
 		
-		float distToTarget = Vector3.Distance(_target, transform.position);
-		float distToClosestAlcove = Vector3.Distance(closestAlcove, transform.position);
-
-		return (distToTarget < distToClosestAlcove || InAlcove(closestAlcove, _target, 0.6)) ? _target: closestAlcove;
+		return (InAlcove(closestAlcove, _target, 0.6)) ? _target: closestAlcove;
 	}
 	
 	private bool CloseEnemyMovingTowards()
@@ -114,7 +113,7 @@ public class Agent : MonoBehaviour {
 		}
 		
 		//Distance between agent and enemy is large enough
-		if (minDist > 5)
+		if (minDist > 4)
 		{
 			return true;
 		}
@@ -124,7 +123,7 @@ public class Agent : MonoBehaviour {
 
 	private bool Moved()
 	{
-		bool moved = !prevPosition.Equals(transform.position);
+		bool moved = Vector3.Distance(prevPosition, transform.position) < 0.02 ;
 		prevPosition = transform.position;
 		return moved;
 	}
@@ -170,7 +169,7 @@ public class Agent : MonoBehaviour {
 			float dist = Vector3.Distance(enemy.transform.position, alcove);
 			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
 		}
-		return closestEnemyDistance > 3 || InAlcove(alcove, transform.position,0.1);
+		return closestEnemyDistance > 4 || InAlcove(alcove, transform.position, (transform.position.z < 0) ? 0.39 : 0.35);
 	}
 
 	private bool InAlcove(Vector3 alcove, Vector3 targ, double tol)
