@@ -204,7 +204,7 @@ public class Agent : MonoBehaviour {
 		else
 		{
 			closestEnemy.GetComponent<Enemy>().SelfDestroy();
-			_agentController._agentTeleportTrapRemaining--;
+			_agentController.DecrementAgentTeleportTrapRemaining();
 		}
 	}
 

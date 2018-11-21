@@ -112,7 +112,7 @@ public class AgentController : MonoBehaviour
 		
 		_player = Instantiate(PlayerPrefab, alcoves[index].transform.position,Quaternion.identity);
 		_player.GetComponent<Player>().SetAgentController(this);
-		_agentTeleportTrapRemaining--;
+		DecrementAgentTeleportTrapRemaining();
 	}
 
 	public void TeleportAgent()
@@ -129,6 +129,18 @@ public class AgentController : MonoBehaviour
 		
 		_agent = Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
 		_agent.GetComponent<Agent>().SetAgentController(this);
+		DecrementPlayerTeleportTrapRemaining();
+	}
+
+	public void DecrementPlayerTeleportTrapRemaining()
+	{
 		_playerTeleportTrapRemaining--;
+		WinningText.text = "Player used teleported trap " + _playerTeleportTrapRemaining + " remaining.";
+	}
+
+	public void DecrementAgentTeleportTrapRemaining()
+	{
+		_agentTeleportTrapRemaining--;
+		WinningText.text = "Agent used teleported trap " + _agentTeleportTrapRemaining + " remaining.";
 	}
 }

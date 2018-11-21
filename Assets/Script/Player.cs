@@ -95,7 +95,7 @@ public class Player : MonoBehaviour {
 		else
 		{
 			closestEnemy.GetComponent<Enemy>().SelfDestroy();
-			_agentController._playerTeleportTrapRemaining--;
+			_agentController.DecrementPlayerTeleportTrapRemaining();
 		}
 	}
 }
