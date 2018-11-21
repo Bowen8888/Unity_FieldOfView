@@ -54,7 +54,7 @@ public class Agent : MonoBehaviour {
 	{
 		var z = transform.position.z;
 		
-		return (z > 0.42 && z < 4.31) || (z>-4.51 && z<-0.31);
+		return (z > 0.42 && z < 4.24) || (z>-4.047 && z<-0.31);
 	}
 
 	private Vector3 FindEscapeAlcove()
