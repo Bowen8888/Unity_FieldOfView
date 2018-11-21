@@ -76,7 +76,7 @@ public class AgentController : MonoBehaviour
 		}
 		else
 		{
-			WinningText.text = ((_playerScore > _agentScore) ? "Player": "Agent") + "Won!";
+			WinningText.text = ((_playerScore > _agentScore) ? "Player": "Agent") + " Won!";
 		}
 	}
 

@@ -4467,8 +4467,8 @@ MonoBehaviour:
     type: 2}
   ScoreText: {fileID: 1084977125}
   WinningText: {fileID: 670261700}
-  _agentTeleportTrapRemaining: 0
-  _playerTeleportTrapRemaining: 0
+  _agentTeleportTrapRemaining: 2
+  _playerTeleportTrapRemaining: 2
 --- !u!4 &1895632968
 Transform:
   m_ObjectHideFlags: 0
