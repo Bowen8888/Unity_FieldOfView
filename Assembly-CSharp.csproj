@@ -56,11 +56,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\Agent.cs" />
+    <Compile Include="Assets\Script\AgentController.cs" />
     <Compile Include="Assets\Script\AlcovesController.cs" />
     <Compile Include="Assets\Script\Doorway.cs" />
     <Compile Include="Assets\Script\Enemy.cs" />
     <Compile Include="Assets\Script\EnemyBody.cs" />
     <Compile Include="Assets\Script\FieldOfView.cs" />
+    <Compile Include="Assets\Script\Player.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/36969/git/team-25-blokish.wiki/Comp521A3/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

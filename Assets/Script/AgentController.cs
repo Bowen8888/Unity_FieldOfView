@@ -7,8 +7,7 @@ public class AgentController : MonoBehaviour
 {
 	public GameObject AgentPrefab;
 	public GameObject PlayerPrefab;
-	public Text PlayerScoreText;
-	public Text AgentScoreText;
+	public Text ScoreText;
 	public Text WinningText;
 	private static int _agentScore;
 	private static int _playerScore;
@@ -41,8 +40,7 @@ public class AgentController : MonoBehaviour
 		_player.GetComponent<Player>().SetAgentController(this);
 		_agentScore = 0;
 		_playerScore = 0;
-		AgentScoreText.text = "Agent Score: " + _agentScore;
-		PlayerScoreText.text = "Player Score: " + _playerScore;
+		ScoreText.text = "Agent Score: " + _agentScore + " Player Score: " + _playerScore;
 	}
 	
 	// Update is called once per frame
@@ -53,7 +51,7 @@ public class AgentController : MonoBehaviour
 	public void IncrementAgentScore()
 	{
 		_agentScore++;
-		AgentScoreText.text = "Agent Score: " + _agentScore;
+		ScoreText.text = "Agent Score: " + _agentScore + " Player Score: " + _playerScore;
 		if (_agentScore + _playerScore == 10)
 		{
 			ShowWinningText();
@@ -63,7 +61,7 @@ public class AgentController : MonoBehaviour
 	public void IncrementPlayerScore()
 	{
 		_playerScore++;
-		PlayerScoreText.text = "Player Score: " + _playerScore;
+		ScoreText.text = "Agent Score: " + _agentScore + " Player Score: " + _playerScore;
 		if (_agentScore + _playerScore == 10)
 		{
 			ShowWinningText();
