@@ -14,6 +14,10 @@ public class AgentController : MonoBehaviour
 	private static int _playerScore;
 	private bool _agentDead;
 	private bool _playerDead;
+	public int _agentTeleportTrapRemaining;
+	public int _playerTeleportTrapRemaining;
+	private GameObject _agent;
+	private GameObject _player;
 
 	// Use this for initialization
 	void Start () {
@@ -24,8 +28,8 @@ public class AgentController : MonoBehaviour
 		{
 			index = rnd.Next(alcoves.Count);
 		}
-		GameObject agent = Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
-		agent.GetComponent<Agent>().SetAgentController(this);
+		_agent = Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
+		_agent.GetComponent<Agent>().SetAgentController(this);
 		var playerIndex = rnd.Next(alcoves.Count);
 		
 		while (playerIndex == 0 || playerIndex == 6 || playerIndex == index)
@@ -33,8 +37,8 @@ public class AgentController : MonoBehaviour
 			playerIndex = rnd.Next(alcoves.Count);
 		}
 		
-		GameObject player = Instantiate(PlayerPrefab, alcoves[playerIndex].transform.position,Quaternion.identity);
-		player.GetComponent<Player>().SetAgentController(this);
+		_player = Instantiate(PlayerPrefab, alcoves[playerIndex].transform.position,Quaternion.identity);
+		_player.GetComponent<Player>().SetAgentController(this);
 		_agentScore = 0;
 		_playerScore = 0;
 		AgentScoreText.text = "Agent Score: " + _agentScore;
@@ -94,5 +98,39 @@ public class AgentController : MonoBehaviour
 		{
 			ShowWinningText();
 		}
+	}
+
+	public void TeleportPlayer()
+	{
+		Destroy(_player);
+		var alcoves = AlcovesController.GetAlcoves();
+		System.Random rnd = new System.Random();
+		var index = rnd.Next(alcoves.Count);
+		
+		while (index == 0 || index == 6)
+		{
+			index = rnd.Next(alcoves.Count);
+		}
+		
+		_player = Instantiate(PlayerPrefab, alcoves[index].transform.position,Quaternion.identity);
+		_player.GetComponent<Player>().SetAgentController(this);
+		_agentTeleportTrapRemaining--;
+	}
+
+	public void TeleportAgent()
+	{
+		Destroy(_agent);
+		var alcoves = AlcovesController.GetAlcoves();
+		System.Random rnd = new System.Random();
+		var index = rnd.Next(alcoves.Count);
+		
+		while (index == 0 || index == 6)
+		{
+			index = rnd.Next(alcoves.Count);
+		}
+		
+		_agent = Instantiate(AgentPrefab, alcoves[index].transform.position,Quaternion.identity);
+		_agent.GetComponent<Agent>().SetAgentController(this);
+		_playerTeleportTrapRemaining--;
 	}
 }

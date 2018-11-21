@@ -34,7 +34,14 @@ public class Agent : MonoBehaviour {
 		{
 			if (CloseEnemyMovingTowards() && InDangerZone())
 			{
-				agent.SetDestination(FindEscapeAlcove());
+				if (_agentController._agentTeleportTrapRemaining > 0)
+				{
+					TeleportClosestEnemyOrPlayer();
+				}
+				else
+				{
+					agent.SetDestination(FindEscapeAlcove());
+				}
 			}
 			else
 			{
@@ -171,6 +178,34 @@ public class Agent : MonoBehaviour {
 			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
 		}
 		return closestEnemyDistance > 4 || transform.position.z > 4.24 || transform.position.z < -4.047;
+	}
+
+	private void TeleportClosestEnemyOrPlayer()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		GameObject closestEnemy = GameObject.FindGameObjectWithTag("Player");
+		float closestEnemyDistance = (closestEnemy == null) ? 100 : Vector3.Distance(closestEnemy.transform.position, transform.position);
+		bool foundEnemyCloserThanPlayer = false;
+		foreach (var enemy in enemies)
+		{
+			float dist = Vector3.Distance(enemy.transform.position, transform.position);
+			if (dist < closestEnemyDistance)
+			{
+				closestEnemyDistance = dist;
+				closestEnemy = enemy;
+				foundEnemyCloserThanPlayer = true;
+			}
+		}
+
+		if (!foundEnemyCloserThanPlayer)
+		{
+			_agentController.TeleportPlayer();
+		}
+		else
+		{
+			closestEnemy.GetComponent<Enemy>().SelfDestroy();
+			_agentController._agentTeleportTrapRemaining--;
+		}
 	}
 
 	private bool InAlcove(Vector3 alcove, Vector3 targ, double tol)

@@ -38,6 +38,11 @@ public class Player : MonoBehaviour {
 			_direction = Vector2.right;
 			Move();
 		}
+
+		if (Input.GetKeyDown(KeyCode.Space) && _agentController._playerTeleportTrapRemaining > 0)
+		{
+			TeleportClosestEnemyOrAgent();
+		}
 	}
 	
 	private void Move()
@@ -64,5 +69,33 @@ public class Player : MonoBehaviour {
 	public void SetAgentController(AgentController agentController)
 	{
 		_agentController = agentController;
+	}
+	
+	private void TeleportClosestEnemyOrAgent()
+	{
+		GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+		GameObject closestEnemy = GameObject.FindGameObjectWithTag("Agent");
+		float closestEnemyDistance = (closestEnemy == null) ? 100 : Vector3.Distance(closestEnemy.transform.position, transform.position);
+		bool foundEnemyCloserThanAgent = false;
+		foreach (var enemy in enemies)
+		{
+			float dist = Vector3.Distance(enemy.transform.position, transform.position);
+			if (dist < closestEnemyDistance)
+			{
+				closestEnemyDistance = dist;
+				closestEnemy = enemy;
+				foundEnemyCloserThanAgent = true;
+			}
+		}
+
+		if (!foundEnemyCloserThanAgent)
+		{
+			_agentController.TeleportAgent();
+		}
+		else
+		{
+			closestEnemy.GetComponent<Enemy>().SelfDestroy();
+			_agentController._playerTeleportTrapRemaining--;
+		}
 	}
 }
