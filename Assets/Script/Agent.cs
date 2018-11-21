@@ -54,7 +54,7 @@ public class Agent : MonoBehaviour {
 	{
 		var z = transform.position.z;
 		
-		return (z > 0.42 && z < 4.24) || (z>-4.047 && z<-0.31);
+		return (z > 0.528 && z < 4.24) || (z>-4.047 && z<-0.318);
 	}
 
 	private Vector3 FindEscapeAlcove()
@@ -177,7 +177,7 @@ public class Agent : MonoBehaviour {
 			float dist = Vector3.Distance(enemy.transform.position, alcove);
 			closestEnemyDistance = Math.Min(dist, closestEnemyDistance);
 		}
-		return closestEnemyDistance > 4 || transform.position.z > 4.24 || transform.position.z < -4.047;
+		return closestEnemyDistance > 4 || transform.position.z > 4.24 || transform.position.z < -4.047 || (transform.position.z > -0.318 && transform.position.z < 0.528);
 	}
 
 	private void TeleportClosestEnemyOrPlayer()
